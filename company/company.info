@@ -1,0 +1,4 @@
+name = Company
+description = 公司基本信息设置
+package = 公司
+core = 7.x

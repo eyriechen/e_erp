@@ -1,0 +1,22 @@
+#order_form label{
+    display: none;
+}
+
+#order_form input{
+    font-size: 1em;
+}
+
+#order_form div{
+    margin-bottom: 2px;
+}
+
+.product_rows{
+    width: 33%;
+}
+
+.e_important {
+    font-weight: bold;
+}
+.e_important ul{
+    font-weight: normal;
+}

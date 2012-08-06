@@ -1,0 +1,148 @@
+<?php
+
+function company_schema() {
+    $schema['e_company_info'] = array(
+        'description' => 'Company infomation',
+        'fields' => array(
+            'name' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'tel' => array(
+                'type' => 'varchar',
+                'length' => 15,
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'fax' => array(
+                'type' => 'varchar',
+                'length' => 15,
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'address' => array(
+                'type' => 'varchar',
+                'length' => 256,
+                'not null' => FALSE,
+                'default' => '',
+            ),
+        ),
+        'primary key' => array('name'),
+    );
+    return $schema;
+}
+
+function company_permission() {
+    return array(
+        'edit comanpany information' => array(
+            'title' => t('编辑公司基本信息'),
+        )
+    );
+}
+
+function company_menu() {
+    $items['company'] = array(
+        'title' => '公司基本信息设置',
+        'description' => '公司基本信息设置。',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('company_form'),
+        'access arguments' => array('edit comanpany information'),
+    );
+    return $items;
+}
+
+function company_form($form, &$form_state) {
+    $result = db_query('select * from {e_company_info} where 1 limit 1');
+    $name = '';
+    $tel = '';
+    $fax = '';
+    $address = '';
+    if ($result->rowCount() != 0) {
+        $record = $result->fetch();
+        $name = $record->name;
+        $tel = $record->tel;
+        $fax = $record->fax;
+        $address = $record->address;
+    }
+    $record = $result->fetch();
+    $form['description'] = array(
+        '#type' => 'item',
+            #'#title' => t('公司基本信息设置'),
+    );
+    $form['name'] = array(
+        '#type' => 'textfield',
+        '#title' => t('公司名'),
+        '#default_value' => $name,
+    );
+    $form['tel'] = array(
+        '#type' => 'textfield',
+        '#title' => t('电话号码'),
+        '#default_value' => $tel,
+    );
+    $form['fax'] = array(
+        '#type' => 'textfield',
+        '#title' => t('传真号码'),
+        '#default_value' => $fax,
+    );
+    $form['address'] = array(
+        '#type' => 'textfield',
+        '#title' => t('地址'),
+        '#default_value' => $address,
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('提交'),
+    );
+    return $form;
+}
+
+function company_form_submit($form, &$form_state) {
+    $result = db_query('select * from {e_company_info} where 1 limit 1');
+    if ($result->rowCount() == 0) {
+        db_query('INSERT INTO e_company_info (name,tel,fax,address)VALUES (:name, :tel , :fax, :address)', array(
+            ':name' => $form_state['values']['name'],
+            ':tel' => $form_state['values']['tel'],
+            ':fax' => $form_state['values']['fax'],
+            ':address' => $form_state['values']['address'],
+                )
+        );
+    } else {
+        db_query('update e_company_info set name = :name , tel = :tel, fax = :fax ,address = :address', array(
+            ':name' => $form_state['values']['name'],
+            ':tel' => $form_state['values']['tel'],
+            ':fax' => $form_state['values']['fax'],
+            ':address' => $form_state['values']['address'],
+                )
+        );
+    }
+    drupal_set_message('提交成功');
+}
+
+function company_form_validate($form, &$form_state) {
+    if ($form_state['values']['name'] == '') {
+        form_set_error('name', t('公司名不能为空'));
+    }
+    if (mb_strlen($form_state['values']['name']) > 40) {
+        form_set_error('name', t('公司名过长'));
+    }
+    if ($form_state['values']['tel'] == '') {
+        form_set_error('tel', t('电话不能为空'));
+    }
+    if (mb_strlen($form_state['values']['tel']) > 15) {
+        form_set_error('tel', t('电话过长'));
+    }
+    if ($form_state['values']['fax'] == '') {
+        form_set_error('fax', t('传真不能为空'));
+    }
+    if (mb_strlen($form_state['values']['fax']) > 15) {
+        form_set_error('fax', t('传真过长'));
+    }
+    if ($form_state['values']['address'] == '') {
+        form_set_error('address', t('地址不能为空'));
+    }
+    if (mb_strlen($form_state['values']['address']) > 256) {
+        form_set_error('address', t('地址过长'));
+    }
+}

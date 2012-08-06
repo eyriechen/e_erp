@@ -1,0 +1,199 @@
+<?php
+
+function customers_permission() {
+    return array(
+        'access module customers' => array(
+            'title' => t('管理供应商'),
+        )
+    );
+}
+
+function customers_menu() {
+    $items['customers'] = array(
+        'title' => '客户列表',
+        'description' => '客户列表',
+        'page callback' => '_customers_list',
+        'access arguments' => array('access module customers'),
+    );
+    $items['customers/add'] = array(
+        'title' => '添加客户',
+        'description' => '添加一个客户',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('_customers_add_form'),
+        'access arguments' => array('access module customers'),
+    );
+    $items['customers/%customer'] = array(
+        'title' => '查看客户',
+        'description' => '查看客户',
+        'page callback' => '_customers_view',
+        'page arguments' => array(1),
+        'access arguments' => array('access module customers'),
+    );
+    $items['customers/%customer/edit'] = array(
+        'title' => '编辑供应商',
+        'description' => '编辑供应商',
+        'page callback' => 'drupal_get_form',
+        'page arguments' => array('_customers_edit_form', 1),
+        'access arguments' => array('access module customers'),
+    );
+    $items['customers/%customer/products'] = array(
+        'title' => '产品列表',
+        'description' => '产品列表',
+        'page callback' => '_customer_products_render',
+        'page arguments' => array(1),
+        'access arguments' => array('access module customers'),
+        'file' => 'customer_products.inc',
+    );
+    $items['customers/%customer/products/xml'] = array(
+        'title' => '产品列表',
+        'description' => '产品列表',
+        'page callback' => '_customer_products_xml',
+        'page arguments' => array(1),
+        'access arguments' => array('access module customers'),
+        'file' => 'customer_products.inc',
+    );
+    $items['customers/%customer/products/edit'] = array(
+        'title' => '产品列表',
+        'description' => '产品列表',
+        'page callback' => '_customer_products_edit',
+        'page arguments' => array(1),
+        'access arguments' => array('access module customers'),
+        'file' => 'customer_products.inc',
+    );
+    $items['customers/%customers/add_check'] = array(
+        'title' => '添加订单',
+        'description' => '添加订单',
+        'page callback' => '_add_order',
+        'page arguments' => array(1),
+        'access arguments' => array('access module customers'),
+        'file' => 'customers_order.inc',
+    );
+    return $items;
+}
+
+function customer_load($id) {
+    $result = db_query('select * from {e_customers} where customer_id = :customer_id limit 1', array(':customer_id' => $id));
+    if ($result->rowCount() != 0) {
+        return $result->fetch();
+    }
+    return null;
+}
+
+
+function _customers_list() {
+    $result = db_query('select * from {e_customers}');
+    $items = array();
+    foreach ($result as $record) {
+        $items[] = array(
+            'data' => l($record->name, 'customers/' . $record->customer_id),
+        );
+    }
+    if (count($items) == 0)
+        return '客户列表为空';
+    else
+        return theme('item_list', array('items' => $items));
+}
+
+function _customers_add_form($form, &$form_state, $customer = null) {
+    if ($customer == null) {
+        $name = "";
+        $tel = "";
+        $fax = "";
+        $address = "";
+        $customer_id = null;
+    } else {
+        $name = $customer->name;
+        $tel = $customer->tel;
+        $fax = $customer->fax;
+        $address = $customer->address;
+        $customer_id = $customer->customer_id;
+    }
+    $form['customer_id'] = array(
+        '#type' => 'textfield',
+        '#attributes' => array('style' => "display:none"),
+        '#title' => t('ID'),
+        '#default_value' => $customer_id,
+    );
+    $form['description'] = array(
+        '#type' => 'item',
+            #'#title' => t('公司基本信息设置'),
+    );
+    $form['name'] = array(
+        '#type' => 'textfield',
+        '#title' => t('公司名'),
+        '#default_value' => $name,
+    );
+    $form['tel'] = array(
+        '#type' => 'textfield',
+        '#title' => t('电话号码'),
+        '#default_value' => $tel,
+    );
+    $form['fax'] = array(
+        '#type' => 'textfield',
+        '#title' => t('传真号码'),
+        '#default_value' => $fax,
+    );
+    $form['address'] = array(
+        '#type' => 'textfield',
+        '#title' => t('地址'),
+        '#default_value' => $address,
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('提交'),
+    );
+    return $form;
+}
+
+function _customers_add_form_submit($form, &$form_state) {
+    db_query('INSERT INTO e_customers (name,tel,fax,address)VALUES (:name, :tel , :fax, :address)', array(
+        ':name' => $form_state['values']['name'],
+        ':tel' => $form_state['values']['tel'],
+        ':fax' => $form_state['values']['fax'],
+        ':address' => $form_state['values']['address'],
+            )
+    );
+    drupal_set_message('提交成功');
+    drupal_goto('/customers');
+}
+
+function _customers_add_form_validate($form, &$form_state) {
+    if ($form_state['values']['name'] == '') {
+        form_set_error('name', '公司名不能为空');
+    }
+}
+
+
+
+
+function _customers_view($customer) {
+    if ($customer == null)
+        return t('没有该供应商');
+    $name = $customer->name;
+    $edit = l('编辑供应商的基本信息', 'customers/' . $customer->customer_id . '/edit');
+    $product = l('产品列表','customers/' . $customer->customer_id . '/products');
+    return $name . '<br/>' . $edit . '<br/>' . $product . '<br/>';
+}
+
+function _customers_edit_form($form, &$form_state, $customer) {
+    return _customers_add_form($form, $form_state, $customer);
+}
+
+function _customers_edit_form_validate($form, &$form_state) {
+    if ($form_state['values']['name'] == '') {
+        form_set_error('name', '公司名不能为空');
+    }
+}
+
+function _customers_edit_form_submit($form, &$form_state) {
+    db_query('update e_customers set name = :name, tel = :tel , fax = :fax, address = :address where customer_id = :customer_id', array(
+        ':name' => $form_state['values']['name'],
+        ':tel' => $form_state['values']['tel'],
+        ':fax' => $form_state['values']['fax'],
+        ':address' => $form_state['values']['address'],
+        ':customer_id' => $form_state['values']['customer_id'],
+            )
+    );
+    drupal_set_message('提交成功');
+    drupal_goto('customers/' . $form_state['values']['customer_id']);
+}

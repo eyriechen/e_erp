@@ -1,0 +1,4 @@
+name = E RMS
+description = 客户供应商资源管理系统
+package = 公司
+core = 7.x

@@ -1,0 +1,134 @@
+<?php
+
+function vendors_schema() {
+    $schema['e_vendors'] = array(
+        'fields' => array(
+            'vendor_id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'name' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+                'default' => '',
+            ),
+            'tel' => array(
+                'type' => 'varchar',
+                'length' => 15,
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'fax' => array(
+                'type' => 'varchar',
+                'length' => 15,
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'address' => array(
+                'type' => 'varchar',
+                'length' => 256,
+                'not null' => FALSE,
+                'default' => '',
+            ),
+        ),
+        'primary key' => array('vendor_id'),
+    );
+    $schema['e_vendors_products'] = array(
+        'fields' => array(
+            'vendor_id' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'product_name' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+            'unit' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+            'price' => array(
+                'type' => 'float',
+            ),
+        ),
+    );
+    $schema['e_vendors_orders'] = array(
+        'fields' => array(
+            'order_id' => array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'vendor_id' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'date' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+            'remarks' => array(
+                'type' => 'varchar',
+                'length' => 200,
+                'not null' => FALSE,
+            ),
+        ),
+        'primary key' => array('order_id'),
+    );
+    $schema['e_vendors_order_products'] = array(
+        'fields' => array(
+            'order_id' => array(
+                'type' => 'int',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'product_name' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+            'size' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+            'unit' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+            'amount' => array(
+                'type' => 'float',
+                'not null' => TRUE,
+            ),
+            'price' => array(
+                'type' => 'float',
+                'not null' => TRUE,
+            ),
+            'sum' => array(
+                'type' => 'float',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'delivery_date' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+            'place' => array(
+                'type' => 'varchar',
+                'length' => 40,
+                'not null' => TRUE,
+            ),
+        ),
+    );
+    return $schema;
+}
+

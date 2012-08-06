@@ -1,0 +1,72 @@
+<?php
+
+function e_rms_permission() {
+    return array(
+        'e rms' => array(
+            'title' => t('客户供应商资源管理系统'),
+        )
+    );
+}
+
+function e_rms_block_info() {
+    $blocks['e_rms'] = array(
+        'info' => t('功能导航'), //The name that will appear in the block list.
+        'cache' => DRUPAL_CACHE_PER_ROLE, //Default
+    );
+    return $blocks;
+}
+
+function get_vendors() {
+    $vendors = array();
+    $result = db_query('select * from {e_vendors}');
+    foreach ($result as $record) {
+        $vendors[] = array(
+            'data' => l($record->name, 'vendors/' . $record->vendor_id),
+            'class' => array('leaf', 'e_important'),
+            'children' => array(
+                array(
+                    'data' => l('添加订单', 'vendors/' . $record->vendor_id . '/add_order'),
+                    'class' => array('expanded'),
+                )
+            ),
+        );
+    }
+    return $vendors;
+}
+
+function get_customers() {
+    $customers = array();
+    $result = db_query('select * from {e_customers}');
+    foreach ($result as $record) {
+        $customers[] = array(
+            'data' => l($record->name, 'customers/' . $record->customer_id),
+            'class' => array('leaf', 'e_important'),
+        );
+    }
+    return $customers;
+}
+
+function e_rms_block_view($delta = '') {
+    switch ($delta) {
+        case 'e_rms':
+            $block['subject'] = t('功能导航');
+            if (user_access('e rms')) {
+                $items = array();
+                $items[] = array(
+                    'data' => l('供应商列表', 'vendors').' '.l('+', 'vendors/add'),
+                    'class' => array('expanded'),
+                    'children' => get_vendors(),
+                );
+
+                $items[] = array(
+                    'data' => l('客户列表', 'customers').' '.l('+', 'customers/add'),
+                    'class' => array('expanded'),
+                    'children' => get_customers(),
+                );
+
+                $block['content'] = theme('item_list', array(
+                    'items' => $items));
+            }
+    }
+    return $block;
+}
