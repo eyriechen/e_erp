@@ -145,4 +145,5 @@ function company_form_validate($form, &$form_state) {
     if (mb_strlen($form_state['values']['address']) > 256) {
         form_set_error('address', t('地址过长'));
     }
+    //test
 }
