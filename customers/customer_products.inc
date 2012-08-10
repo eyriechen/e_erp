@@ -166,7 +166,16 @@ function customer_products_form_submit($form, &$form_state) {
 }
 
 function _edit_product_form_submit_validate($form, &$form_state) {
-    
+    for($i = 0; $i < $form_state['row_num']; $i++){
+        if ($form_state['values']['product_rows'][$i]['name'] == '')
+            form_set_error('product_rows][' . $i . '][name', '品名不能为空');
+        if ($form_state['values']['product_rows'][$i]['specification'] == '')
+            form_set_error('product_rows][' . $i . '][specification', '规格型号不能为空');
+        if ($form_state['values']['product_rows'][$i]['unit'] == '')
+            form_set_error('product_rows][' . $i . '][unit', '单位不能为空');
+        if ($form_state['values']['product_rows'][$i]['price'] == '')
+            form_set_error('product_rows][' . $i . '][price', '价格不能为空');
+    }
 }
 
 function _customer_products_xml($customer) {
