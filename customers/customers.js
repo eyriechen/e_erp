@@ -2,19 +2,17 @@
 
 jQuery(document).ready(function() {
     jQuery('#datepicker').datepicker();
-    refresh_table();
-    Drupal.behaviors.VendorsBehaviour = {
+    refresh_table2();
+    Drupal.behaviors.CustomersBehaviour = {
         attach: function(context, settings) {  
-            jQuery('#-add-order-form').ajaxComplete(function(event, xhr, settings) {
-                refresh_table();
+            jQuery('#-add-check-form').ajaxComplete(function(event, xhr, settings) {
+                refresh_table2();
             });
         }
     }
-
-
 });
     
-function refresh_table(){
+function refresh_table2(){
     jQuery(".form_amount input").unbind("keyup");
     jQuery(".form_amount input").unbind("mouseleave");
     jQuery(".form_price input").unbind("keyup");
@@ -31,6 +29,7 @@ function refresh_table(){
     jQuery('.form_price input').mouseleave(function() {
         change_sum(this);
     });
+    jQuery('.form_date input').datepicker();
 }
 
 function get_input(row,name){

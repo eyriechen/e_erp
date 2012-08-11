@@ -192,6 +192,7 @@ function _customer_products_xml($customer) {
     foreach ($result as $record) {
         $products[] = array(
             'name' => $record->product_name,
+            'specification' => $record->specification,
             'unit' => $record->unit,
             'price' => $record->price,
         );

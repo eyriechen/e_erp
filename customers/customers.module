@@ -60,13 +60,13 @@ function customers_menu() {
         'access arguments' => array('access module customers'),
         'file' => 'customer_products.inc',
     );
-    $items['customers/%customers/add_check'] = array(
-        'title' => '添加订单',
-        'description' => '添加订单',
-        'page callback' => '_add_order',
+    $items['customers/%customer/addcheck'] = array(
+        'title' => '添加对账单',
+        'description' => '添加对账单',
+        'page callback' => '_add_check',
         'page arguments' => array(1),
         'access arguments' => array('access module customers'),
-        'file' => 'customers_order.inc',
+        'file' => 'customers_check.inc',
     );
     return $items;
 }
@@ -78,7 +78,6 @@ function customer_load($id) {
     }
     return null;
 }
-
 
 function _customers_list() {
     $result = db_query('select * from {e_customers}');
@@ -163,16 +162,14 @@ function _customers_add_form_validate($form, &$form_state) {
     }
 }
 
-
-
-
 function _customers_view($customer) {
     if ($customer == null)
         return t('没有该供应商');
     $name = $customer->name;
     $edit = l('编辑供应商的基本信息', 'customers/' . $customer->customer_id . '/edit');
-    $product = l('产品列表','customers/' . $customer->customer_id . '/products');
-    return $name . '<br/>' . $edit . '<br/>' . $product . '<br/>';
+    $product = l('产品列表', 'customers/' . $customer->customer_id . '/products');
+    $add_check = l('添加对账单','customers/'.$customer->customer_id.'/addcheck');
+    return $name . '<br/>' . $edit . '<br/>' . $product . '<br/>' . $add_check;
 }
 
 function _customers_edit_form($form, &$form_state, $customer) {
