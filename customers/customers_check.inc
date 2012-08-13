@@ -2,6 +2,7 @@
 
 function get_products($customer) {
     $products = array();
+    $products['choose']  = '请选择型号'; //HOTFIX +customers_check.inc product_changed()
     $result = db_query('select specification from { e_customers_products} where customer_id = :customer_id', array(':customer_id' => $customer->customer_id));
     foreach ($result as $record) {
         $products[$record->specification] = $record->specification;
@@ -58,7 +59,7 @@ function _add_check_form($form, &$form_state, $customer, $check = null) {
                 '#type' => 'textfield',
                 '#title' => t('日期'),
                 '#suffix' => '</td>',
-                '#prefix'=>'<table id = "check_form"><thead><tr><th>日期</th><th>规格</th><th>数量</th><th>单价</th><th>合计</th></tr></thead><tr><td class = "form_date">',
+                '#prefix'=>'<table id = "check_form"><thead><tr><th>日期</th><th>规格</th><th>数量</th><th>单价</th><th>合计</th></tr></thead><tr><td class = "check_form_date">',
                 '#attributes' => array('size' => "20"),
             );
         }else{
@@ -66,7 +67,7 @@ function _add_check_form($form, &$form_state, $customer, $check = null) {
                 '#type' => 'textfield',
                 '#title' => t('日期'),
                 '#suffix' => '</td>',
-                '#prefix'=>'<tr><td class="form_date">',
+                '#prefix'=>'<tr><td class="check_form_date">',
                 '#attributes' => array('size' => "20"),
             );
         }
@@ -74,27 +75,27 @@ function _add_check_form($form, &$form_state, $customer, $check = null) {
             '#type' => 'select',
             '#title' => t('规格型号'),
             '#options' => $products,
-            '#prefix' => '<td class="form_product">',
+            '#prefix' => '<td class="check_form_product">',
             '#suffix' => '</td>',
         );
         $form['check_rows'][$i]['amount'] = array(
             '#type' => 'textfield',
             '#title' => t('数量'),
-            '#prefix' => '<td class="form_amount">',
+            '#prefix' => '<td class="check_form_amount">',
             '#suffix' => '</td>',
             '#attributes' => array('size' => "20"),
         );
         $form['check_rows'][$i]['price'] = array(
             '#type' => 'textfield',
             '#title' => t('单价'),
-            '#prefix' => '<td class="form_price">',
+            '#prefix' => '<td class="check_form_price">',
             '#suffix' => '</td>',
             '#attributes' => array('size' => "20"),
         );
         $form['check_rows'][$i]['sum'] = array(
             '#type' => 'textfield',
             '#title' => t('合计'),
-            '#prefix' => '<td class="form_sum">',
+            '#prefix' => '<td class="check_form_sum">',
             '#suffix' => '</td>',
             '#attributes' => array('size' => "20"),
         );
